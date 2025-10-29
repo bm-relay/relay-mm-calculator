@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Relay Pay Calculator</title>
+  <style>
+    html,body{
+      margin:0;padding:0;
+      background:#FFFFFF;color:#121212;
+      font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;
+    }
+    .container{max-width:720px;margin:0 auto;padding:0 16px;}
+    p,label,select,input{font-size:16px;line-height:1.4;}
+
+    .calculator{
+      background:#FFFFFF;
+      border:1px solid rgba(18,18,18,0.15);
+      border-radius:16px;
+      padding:20px;
+      box-shadow:0 8px 24px rgba(0,0,0,0.06);
+      margin:0;
+    }
+
+    .form-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;}
+    .form-group-col{flex:1 1 220px;}
+    label{display:block;font-weight:700;margin:0 0 8px 0;}
+    select,input[type=range]{
+      width:100%;
+      background:#FFFFFF;
+      border:1px solid rgba(18,18,18,0.25);
+      border-radius:8px;
+      padding:12px;
+      box-sizing:border-box;
+      color:#121212;
+    }
+    input[type=range]{padding:0;height:36px;}
+
+    #results-container{
+      margin-top:12px;
+      background:#FFFFFF;
+      border:1px solid rgba(18,18,18,0.08);
+      border-radius:12px;
+      padding:16px;
+      text-align:center;
+    }
+    .label{font-size:18px;color:#333;margin-bottom:6px;}
+    .hero-result .value-chip{
+      display:inline-block;
+      background:#D6EC83;
+      color:#121212;
+      border-radius:12px;
+      padding:12px 16px;
+      font-weight:700;
+      font-size:28px;
+      line-height:1;
+    }
+
+    .other-metrics{
+      display:flex;gap:16px;justify-content:center;flex-wrap:wrap;
+      margin-top:16px;padding-top:16px;border-top:1px solid rgba(18,18,18,0.12);
+    }
+    .metric{min-width:120px;text-align:center;}
+    .metric .v{font-weight:700;font-size:18px;color:#121212;}
+    .metric .k{font-size:14px;color:#555;}
+
+    .hint{font-size:14px;color:#666; margin-top: 4px;}
+
+    @media (max-width: 600px) {
+      .form-row {
+        flex-direction: column; 
+        gap: 0;
+        margin-bottom: 0;
+      }
+      .form-group-col {
+        margin-bottom: 20px; 
+        flex-basis: auto;
+      }
+      .calculator > .form-row:last-of-type > .form-group-col:last-child {
+         margin-bottom: 0; 
+      }
+      .label{font-size:16px;}
+      .hero-result .value-chip{font-size:24px;}
+      .metric .v{font-size:16px;}
+      .metric .k{font-size:12px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="calculator">
+      <div class="form-row">
+        <div class="form-group-col">
+          <label for="depot">1. Depot</label>
+          <select id="depot">
+            <option value="UB11">UB11 – West London</option>
+            <option value="NG15">NG15 – Nottingham</option>
+          </select>
+        </div>
+        <div class="form-group-col">
+          <label for="area">2. Delivery area</label>
+          <select id="area"></select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group-col">
+          <label for="vanType">3. Van</label>
+          <select id="vanType">
+            <option value="LWB">Long Wheelbase (LWB)</option>
+            <option value="XLWB">Extra Long Wheelbase (XLWB)</option>
+            <option value="Luton">Luton Van</option>
+          </select>
+        </div>
+        <div class="form-group-col">
+          <label for="daysWeek">4. Days per week: <span id="daysLabel">5</span></label>
+          <input id="daysWeek" type="range" min="1" max="7" step="1" value="5" />
+          <div class="hint" aria-live="polite">Move the slider to change days.</div>
+        </div>
+      </div>
+
+      <div id="results-container" aria-live="polite"></div>
+    </section>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const vanTypes={'LWB':{bags:75},'XLWB':{bags:105},'Luton':{bags:120}};
+      const routeData={
+        'UB11':{'West London':{stops:5,miles:40,shift:6},'SE London':{stops:5,miles:56,shift:8},'NE London':{stops:6,miles:85,shift:8}},
+        'NG15':{'Nottingham':{stops:9,miles:58,shift:6},'Sheffield':{stops:6,miles:97,shift:7},'Birmingham':{stops:7,miles:138,shift:7},'Manchester':{stops:5,miles:155,shift:8},'Liverpool':{stops:5,miles:224,shift:9}}
+      };
+
+      const depotEl=document.getElementById('depot');
+      const areaEl=document.getElementById('area');
+      const vanTypeEl=document.getElementById('vanType');
+      const daysEl=document.getElementById('daysWeek');
+
+      function populateAreas(){
+        const depot=depotEl.value;
+        areaEl.innerHTML='';
+        Object.keys(routeData[depot]).forEach(area=>{
+          const opt=document.createElement('option');
+          opt.value=area;
+          opt.textContent=area;
+          areaEl.appendChild(opt);
+        });
+      }
+
+      function payFor(city,hours,bags){
+        if(city==='NG15'){if(hours===6){if(bags<=79)return 99;if(bags<=94)return 105;if(bags<=114)return 111;return 117}if(hours===7){if(bags<=79)return 110;if(bags<=94)return 121;if(bags<=114)return 128;return 135}if(hours===8){if(bags<=79)return 126;if(bags<=94)return 134;if(bags<=114)return 142;return 150}if(hours===9){if(bags<=79)return 135;if(bags<=94)return 147;if(bags<=114)return 156;return 165}}
+        if(city==='UB11'){if(hours===6){if(bags<=64)return 95;if(bags<=80)return 105;if(bags<=94)return 110;if(bags<=110)return 115;return 120}if(hours===8){if(bags<=64)return 125;if(bags<=80)return 135;if(bags<=94)return 140;if(bags<=110)return 145;return 150}}
+        return null;
+      }
+
+      function fmt(x){return x===null?'N/A':'£'+Math.round(x)}
+
+      function render(){
+        const depot=depotEl.value;
+        const area=areaEl.value;
+        if (!area || !routeData[depot] || !routeData[depot][area]) return;
+
+        const shiftHours=routeData[depot][area].shift;
+        const days=Number(daysEl.value);
+        const bags=vanTypes[vanTypeEl.value].bags;
+
+        document.getElementById('daysLabel').textContent=days;
+
+        const perShift=payFor(depot,shiftHours,bags);
+        const weekly=perShift?perShift*days:null;
+        const drops=Math.round(routeData[depot][area].stops);
+
+        const c=document.getElementById('results-container');
+        c.innerHTML=`<div class="hero-result"><div class="label">Estimated weekly pay</div><div class="value-chip">${fmt(weekly)}</div></div><div class="other-metrics"><div class="metric"><div class="v">${fmt(perShift)}</div><div class="k">Per shift</div></div><div class="metric"><div class="v">${drops}</div><div class="k">Stops</div></div><div class="metric"><div class="v">${shiftHours} hours</div><div class="k">Shift length</div></div></div>`;
+      }
+
+      depotEl.addEventListener('change',()=>{populateAreas();render();});
+      areaEl.addEventListener('change',render);
+      vanTypeEl.addEventListener('change',render);
+      daysEl.addEventListener('input',render);
+
+      populateAreas();
+      render();
+    });
+  </script>
+</body>
+</html>
