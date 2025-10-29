@@ -13,6 +13,14 @@
     .container{max-width:720px;margin:0 auto;padding:0 16px;}
     p,label,select,input{font-size:16px;line-height:1.4;}
 
+    .page-title{
+      text-align:center;
+      font-size:28px;
+      font-weight:800;
+      margin:32px 0 20px;
+      color:#121212;
+    }
+
     .calculator{
       background:#FFFFFF;
       border:1px solid rgba(18,18,18,0.15);
@@ -67,18 +75,10 @@
     .hint{font-size:14px;color:#666; margin-top: 4px;}
 
     @media (max-width: 600px) {
-      .form-row {
-        flex-direction: column; 
-        gap: 0;
-        margin-bottom: 0;
-      }
-      .form-group-col {
-        margin-bottom: 20px; 
-        flex-basis: auto;
-      }
-      .calculator > .form-row:last-of-type > .form-group-col:last-child {
-         margin-bottom: 0; 
-      }
+      .page-title{font-size:22px;margin:20px 0 16px;}
+      .form-row {flex-direction: column;gap: 0;margin-bottom: 0;}
+      .form-group-col {margin-bottom: 20px;flex-basis: auto;}
+      .calculator > .form-row:last-of-type > .form-group-col:last-child {margin-bottom: 0;}
       .label{font-size:16px;}
       .hero-result .value-chip{font-size:24px;}
       .metric .v{font-size:16px;}
@@ -88,6 +88,8 @@
 </head>
 <body>
   <div class="container">
+    <h1 class="page-title">Relay Van Driver Pay Calculator</h1>
+
     <section class="calculator">
       <div class="form-row">
         <div class="form-group-col">
