@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Relay Van Driver Pay Calculator</title>
 
-  <!-- Inter Font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
@@ -76,6 +75,18 @@
     .metric{min-width:120px;text-align:center;}
     .metric .v{font-weight:700;font-size:18px;color:#121212;}
     .metric .k{font-size:14px;color:#555;}
+    
+    .compatible-areas{
+      margin-top:16px;
+      padding-top:16px;
+      border-top:1px solid rgba(18,18,18,0.12);
+      text-align:center;
+    }
+    .compatible-areas .area-list{
+      font-size:18px;
+      font-weight:700;
+      color:#121212;
+    }
 
     .hint{font-size:14px;color:#666; margin-top: 4px;}
 
@@ -88,6 +99,7 @@
       .hero-result .value-chip{font-size:24px;}
       .metric .v{font-size:16px;}
       .metric .k{font-size:12px;}
+      .compatible-areas .area-list { font-size: 16px; }
     }
   </style>
 </head>
@@ -105,8 +117,8 @@
           </select>
         </div>
         <div class="form-group-col">
-          <label for="area">2. Delivery area</label>
-          <select id="area"></select>
+          <label for="shiftDuration">2. Shift duration</label>
+          <select id="shiftDuration"></select>
         </div>
       </div>
 
@@ -139,18 +151,27 @@
       };
 
       const depotEl=document.getElementById('depot');
-      const areaEl=document.getElementById('area');
+      const shiftEl=document.getElementById('shiftDuration'); // Changed from areaEl
       const vanTypeEl=document.getElementById('vanType');
       const daysEl=document.getElementById('daysWeek');
 
-      function populateAreas(){
+      function populateShiftDurations(){ // Renamed and rewrote function
         const depot=depotEl.value;
-        areaEl.innerHTML='';
-        Object.keys(routeData[depot]).forEach(area=>{
+        const depotRoutes = routeData[depot];
+        
+        // Find unique shift durations for the selected depot
+        const durations = new Set();
+        Object.values(depotRoutes).forEach(route => durations.add(route.shift));
+        
+        // Sort them numerically
+        const sortedDurations = [...durations].sort((a, b) => a - b);
+
+        shiftEl.innerHTML=''; // Clear old options
+        sortedDurations.forEach(duration=>{
           const opt=document.createElement('option');
-          opt.value=area;
-          opt.textContent=area;
-          areaEl.appendChild(opt);
+          opt.value=duration;
+          opt.textContent=`${duration} hours`;
+          shiftEl.appendChild(opt);
         });
       }
 
@@ -168,10 +189,9 @@
 
       function render(){
         const depot=depotEl.value;
-        const area=areaEl.value;
-        if (!area || !routeData[depot] || !routeData[depot][area]) return;
+        const shiftHours=Number(shiftEl.value); // Get hours directly from new select
+        if (!shiftHours) return; // Exit if no shift duration is selected
 
-        const shiftHours=routeData[depot][area].shift;
         const days=Number(daysEl.value);
         const bags=vanTypes[vanTypeEl.value].bags;
 
@@ -179,23 +199,38 @@
 
         const perShift=payFor(depot,shiftHours,bags);
         const weekly=perShift?perShift*days:null;
-        const drops=Math.round(routeData[depot][area].stops);
+        
+        // Find all areas that match the selected depot and shift duration
+        const matchingAreas = [];
+        const depotRoutes = routeData[depot];
+        for (const areaName in depotRoutes) {
+          if (depotRoutes[areaName].shift === shiftHours) {
+            matchingAreas.push(areaName);
+          }
+        }
+        const areaListStr = matchingAreas.length > 0 ? matchingAreas.join(' or ') : 'N/A';
 
         const c=document.getElementById('results-container');
+        // Updated rendering template
         c.innerHTML=`<div class="hero-result"><div class="label">Estimated weekly pay</div><div class="value-chip">${fmt(weekly)}</div></div>
         <div class="other-metrics">
           <div class="metric"><div class="v">${fmt(perShift)}</div><div class="k">Per shift</div></div>
-          <div class="metric"><div class="v">${drops}</div><div class="k">Stops</div></div>
           <div class="metric"><div class="v">${shiftHours} hours</div><div class="k">Shift length</div></div>
+        </div>
+        <div class="compatible-areas">
+          <div class="label">Possible areas for this shift</div>
+          <div class="area-list">${areaListStr}</div>
         </div>`;
       }
 
-      depotEl.addEventListener('change',()=>{populateAreas();render();});
-      areaEl.addEventListener('change',render);
+      // Update event listeners
+      depotEl.addEventListener('change',()=>{populateShiftDurations();render();});
+      shiftEl.addEventListener('change',render);
       vanTypeEl.addEventListener('change',render);
       daysEl.addEventListener('input',render);
 
-      populateAreas();
+      // Initial setup
+      populateShiftDurations();
       render();
     });
   </script>
