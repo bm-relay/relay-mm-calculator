@@ -151,22 +151,20 @@
       };
 
       const depotEl=document.getElementById('depot');
-      const shiftEl=document.getElementById('shiftDuration'); // Changed from areaEl
+      const shiftEl=document.getElementById('shiftDuration');
       const vanTypeEl=document.getElementById('vanType');
       const daysEl=document.getElementById('daysWeek');
 
-      function populateShiftDurations(){ // Renamed and rewrote function
+      function populateShiftDurations(){
         const depot=depotEl.value;
         const depotRoutes = routeData[depot];
         
-        // Find unique shift durations for the selected depot
         const durations = new Set();
         Object.values(depotRoutes).forEach(route => durations.add(route.shift));
         
-        // Sort them numerically
         const sortedDurations = [...durations].sort((a, b) => a - b);
 
-        shiftEl.innerHTML=''; // Clear old options
+        shiftEl.innerHTML='';
         sortedDurations.forEach(duration=>{
           const opt=document.createElement('option');
           opt.value=duration;
@@ -186,11 +184,17 @@
       }
 
       function fmt(x){return x===null?'N/A':'£'+Math.round(x)}
+      
+      // New function to format hourly pay (to 2 decimal places)
+      function fmtHourly(x){
+        if(x === null || x === undefined || isNaN(x)) return 'N/A';
+        return '£' + x.toFixed(2);
+      }
 
       function render(){
         const depot=depotEl.value;
-        const shiftHours=Number(shiftEl.value); // Get hours directly from new select
-        if (!shiftHours) return; // Exit if no shift duration is selected
+        const shiftHours=Number(shiftEl.value);
+        if (!shiftHours) return;
 
         const days=Number(daysEl.value);
         const bags=vanTypes[vanTypeEl.value].bags;
@@ -200,7 +204,9 @@
         const perShift=payFor(depot,shiftHours,bags);
         const weekly=perShift?perShift*days:null;
         
-        // Find all areas that match the selected depot and shift duration
+        // Calculate per-hour pay
+        const perHour = (perShift && shiftHours) ? (perShift / shiftHours) : null;
+        
         const matchingAreas = [];
         const depotRoutes = routeData[depot];
         for (const areaName in depotRoutes) {
@@ -211,10 +217,12 @@
         const areaListStr = matchingAreas.length > 0 ? matchingAreas.join(' or ') : 'N/A';
 
         const c=document.getElementById('results-container');
-        // Updated rendering template
+        
+        // Updated innerHTML to include the new 'Per hour' metric
         c.innerHTML=`<div class="hero-result"><div class="label">Estimated weekly pay</div><div class="value-chip">${fmt(weekly)}</div></div>
         <div class="other-metrics">
           <div class="metric"><div class="v">${fmt(perShift)}</div><div class="k">Per shift</div></div>
+          <div class="metric"><div class="v">${fmtHourly(perHour)}</div><div class="k">Per hour</div></div>
           <div class="metric"><div class="v">${shiftHours} hours</div><div class="k">Shift length</div></div>
         </div>
         <div class="compatible-areas">
@@ -223,13 +231,11 @@
         </div>`;
       }
 
-      // Update event listeners
       depotEl.addEventListener('change',()=>{populateShiftDurations();render();});
       shiftEl.addEventListener('change',render);
       vanTypeEl.addEventListener('change',render);
       daysEl.addEventListener('input',render);
 
-      // Initial setup
       populateShiftDurations();
       render();
     });
