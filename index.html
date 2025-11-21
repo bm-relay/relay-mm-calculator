@@ -144,61 +144,118 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const vanTypes={'LWB':{bags:75},'XLWB':{bags:105},'Luton':{bags:120}};
-      const routeData={
-        'UB11':{'West London':{stops:5,miles:40,shift:6},'SE London':{stops:5,miles:56,shift:8},'NE London':{stops:6,miles:85,shift:8}},
-        'NG15':{'Nottingham':{stops:9,miles:58,shift:6},'Sheffield':{stops:6,miles:97,shift:7},'Birmingham':{stops:7,miles:138,shift:7},'Manchester':{stops:5,miles:155,shift:8},'Liverpool':{stops:5,miles:224,shift:9}}
+      const vanTypes = {
+        'LWB':   { bags: 75 },
+        'XLWB':  { bags: 105 },
+        'Luton': { bags: 120 }
       };
 
-      const depotEl=document.getElementById('depot');
-      const shiftEl=document.getElementById('shiftDuration'); // Changed from areaEl
-      const vanTypeEl=document.getElementById('vanType');
-      const daysEl=document.getElementById('daysWeek');
+      const routeData = {
+        'UB11': {
+          'West London': {stops:5,miles:40,shift:6},
+          'SE London':   {stops:5,miles:56,shift:8},
+          'NE London':   {stops:6,miles:85,shift:8}
+        },
+        'NG15': {
+          'Nottingham': {stops:9,miles:58,shift:6},
+          'Sheffield':  {stops:6,miles:97,shift:7},
+          'Birmingham': {stops:7,miles:138,shift:8}, // updated to 8 hours
+          'Manchester': {stops:5,miles:155,shift:9},
+          'Liverpool':  {stops:5,miles:224,shift:10} // updated to 10 hours
+        }
+      };
 
-      function populateShiftDurations(){ // Renamed and rewrote function
-        const depot=depotEl.value;
+      const depotEl   = document.getElementById('depot');
+      const shiftEl   = document.getElementById('shiftDuration');
+      const vanTypeEl = document.getElementById('vanType');
+      const daysEl    = document.getElementById('daysWeek');
+
+      function populateShiftDurations() {
+        const depot = depotEl.value;
         const depotRoutes = routeData[depot];
         
-        // Find unique shift durations for the selected depot
         const durations = new Set();
         Object.values(depotRoutes).forEach(route => durations.add(route.shift));
         
-        // Sort them numerically
         const sortedDurations = [...durations].sort((a, b) => a - b);
 
-        shiftEl.innerHTML=''; // Clear old options
-        sortedDurations.forEach(duration=>{
-          const opt=document.createElement('option');
-          opt.value=duration;
-          opt.textContent=`${duration} hours`;
+        shiftEl.innerHTML = '';
+        sortedDurations.forEach(duration => {
+          const opt = document.createElement('option');
+          opt.value = duration;
+          opt.textContent = `${duration} hours`;
           shiftEl.appendChild(opt);
         });
       }
 
-      function payFor(city,hours,bags){
-        if(city==='NG15'){if(hours===6){if(bags<=79)return 99;if(bags<=94)return 105;if(bags<=114)return 111;return 117}
-          if(hours===7){if(bags<=79)return 110;if(bags<=94)return 121;if(bags<=114)return 128;return 135}
-          if(hours===8){if(bags<=79)return 126;if(bags<=94)return 134;if(bags<=114)return 142;return 150}
-          if(hours===9){if(bags<=79)return 135;if(bags<=94)return 147;if(bags<=114)return 156;return 165}}
-        if(city==='UB11'){if(hours===6){if(bags<=64)return 95;if(bags<=80)return 105;if(bags<=94)return 110;if(bags<=110)return 115;return 120}
-          if(hours===8){if(bags<=64)return 125;if(bags<=80)return 135;if(bags<=94)return 140;if(bags<=110)return 145;return 150}}
+      // Updated pay function: NG15 uses flat pay per van type & shift; UB11 keeps existing bands
+      function payFor(depot, hours, vanType) {
+        const bags = vanTypes[vanType].bags;
+
+        // NG15 – new pay structure, independent of bags
+        if (depot === 'NG15') {
+          if (hours === 6) { // Nottingham
+            if (vanType === 'LWB')   return 115;
+            if (vanType === 'XLWB')  return 121;
+            if (vanType === 'Luton') return 127;
+          }
+          if (hours === 7) { // Sheffield
+            if (vanType === 'LWB')   return 131;
+            if (vanType === 'XLWB')  return 138;
+            if (vanType === 'Luton') return 145;
+          }
+          if (hours === 8) { // Birmingham
+            if (vanType === 'LWB')   return 141;
+            if (vanType === 'XLWB')  return 148;
+            if (vanType === 'Luton') return 155;
+          }
+          if (hours === 9) { // Manchester
+            if (vanType === 'LWB')   return 157;
+            if (vanType === 'XLWB')  return 165;
+            if (vanType === 'Luton') return 173;
+          }
+          if (hours === 10) { // Liverpool
+            if (vanType === 'LWB')   return 175;
+            if (vanType === 'XLWB')  return 185;
+            if (vanType === 'Luton') return 195;
+          }
+        }
+
+        // UB11 – keep existing bag-based bands
+        if (depot === 'UB11') {
+          if (hours === 6) {
+            if (bags <= 64)  return 95;
+            if (bags <= 80)  return 105;
+            if (bags <= 94)  return 110;
+            if (bags <= 110) return 115;
+            return 120;
+          }
+          if (hours === 8) {
+            if (bags <= 64)  return 125;
+            if (bags <= 80)  return 135;
+            if (bags <= 94)  return 140;
+            if (bags <= 110) return 145;
+            return 150;
+          }
+        }
+
         return null;
       }
 
-      function fmt(x){return x===null?'N/A':'£'+Math.round(x)}
+      function fmt(x){return x===null?'N/A':'£'+Math.round(x);}
 
       function render(){
-        const depot=depotEl.value;
-        const shiftHours=Number(shiftEl.value); // Get hours directly from new select
-        if (!shiftHours) return; // Exit if no shift duration is selected
+        const depot      = depotEl.value;
+        const shiftHours = Number(shiftEl.value);
+        if (!shiftHours) return;
 
-        const days=Number(daysEl.value);
-        const bags=vanTypes[vanTypeEl.value].bags;
+        const days    = Number(daysEl.value);
+        const vanType = vanTypeEl.value;
 
-        document.getElementById('daysLabel').textContent=days;
+        document.getElementById('daysLabel').textContent = days;
 
-        const perShift=payFor(depot,shiftHours,bags);
-        const weekly=perShift?perShift*days:null;
+        const perShift = payFor(depot, shiftHours, vanType);
+        const weekly   = perShift ? perShift * days : null;
         
         // Find all areas that match the selected depot and shift duration
         const matchingAreas = [];
@@ -210,24 +267,32 @@
         }
         const areaListStr = matchingAreas.length > 0 ? matchingAreas.join(' or ') : 'N/A';
 
-        const c=document.getElementById('results-container');
-        // Updated rendering template
-        c.innerHTML=`<div class="hero-result"><div class="label">Estimated weekly pay</div><div class="value-chip">${fmt(weekly)}</div></div>
-        <div class="other-metrics">
-          <div class="metric"><div class="v">${fmt(perShift)}</div><div class="k">Per shift</div></div>
-          <div class="metric"><div class="v">${shiftHours} hours</div><div class="k">Shift length</div></div>
-        </div>
-        <div class="compatible-areas">
-          <div class="label">Possible areas for this shift</div>
-          <div class="area-list">${areaListStr}</div>
-        </div>`;
+        const c = document.getElementById('results-container');
+        c.innerHTML = `
+          <div class="hero-result">
+            <div class="label">Estimated weekly pay</div>
+            <div class="value-chip">${fmt(weekly)}</div>
+          </div>
+          <div class="other-metrics">
+            <div class="metric">
+              <div class="v">${fmt(perShift)}</div>
+              <div class="k">Per shift</div>
+            </div>
+            <div class="metric">
+              <div class="v">${shiftHours} hours</div>
+              <div class="k">Shift length</div>
+            </div>
+          </div>
+          <div class="compatible-areas">
+            <div class="label">Possible areas for this shift</div>
+            <div class="area-list">${areaListStr}</div>
+          </div>`;
       }
 
-      // Update event listeners
-      depotEl.addEventListener('change',()=>{populateShiftDurations();render();});
-      shiftEl.addEventListener('change',render);
-      vanTypeEl.addEventListener('change',render);
-      daysEl.addEventListener('input',render);
+      depotEl.addEventListener('change', () => { populateShiftDurations(); render(); });
+      shiftEl.addEventListener('change', render);
+      vanTypeEl.addEventListener('change', render);
+      daysEl.addEventListener('input', render);
 
       // Initial setup
       populateShiftDurations();
