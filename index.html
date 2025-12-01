@@ -1,432 +1,303 @@
-<style>  
-/* Pay Calculator Section */  
-.calculator-section {  
-  background: #F9F9F9;  
-  padding: 80px 20px;  
-  position: relative;  
-}  
-  
-.calculator-container {  
-  max-width: 900px;  
-  margin: 0 auto;  
-}  
-  
-.calculator-title {  
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;  
-  font-size: 48px;  
-  font-weight: 700;  
-  color: #121212;  
-  text-align: center;  
-  margin: 0 0 16px 0;  
-  letter-spacing: -1px;  
-}  
-  
-.calculator-subtitle {  
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;  
-  font-size: 20px;  
-  font-weight: 400;  
-  color: #666666;  
-  text-align: center;  
-  margin: 0 0 50px 0;  
-}  
-  
-/* Calculator Card */  
-.calculator-card {  
-  background: #FFFFFF;  
-  border: 2px solid #F5F5F5;  
-  border-radius: 20px;  
-  padding: 40px;  
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);  
-}  
-  
-/* Form Grid */  
-.calculator-grid {  
-  display: grid;  
-  grid-template-columns: repeat(2, 1fr);  
-  gap: 24px;  
-  margin-bottom: 32px;  
-}  
-  
-.form-group {  
-  display: flex;  
-  flex-direction: column;  
-}  
-  
-.form-label {  
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;  
-  font-size: 16px;  
-  font-weight: 600;  
-  color: #121212;  
-  margin-bottom: 10px;  
-  display: flex;  
-  align-items: center;  
-  gap: 8px;  
-}  
-  
-.label-number {  
-  width: 24px;  
-  height: 24px;  
-  background: #D6EC83;  
-  color: #121212;  
-  border-radius: 50%;  
-  display: inline-flex;  
-  align-items: center;  
-  justify-content: center;  
-  font-size: 14px;  
-  font-weight: 700;  
-  flex-shrink: 0;  
-}  
-  
-.form-select {  
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;  
-  font-size: 16px;  
-  padding: 14px 16px;  
-  border: 2px solid #E5E5E5;  
-  border-radius: 12px;  
-  background: #FFFFFF;  
-  color: #121212;  
-  cursor: pointer;  
-  transition: all 0.3s;  
-  appearance: none;  
-  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23121212' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");  
-  background-repeat: no-repeat;  
-  background-position: right 16px center;  
-  padding-right: 40px;  
-}  
-  
-.form-select:hover {  
-  border-color: #D6EC83;  
-}  
-  
-.form-select:focus {  
-  outline: none;  
-  border-color: #D6EC83;  
-  box-shadow: 0 0 0 3px rgba(214, 236, 131, 0.2);  
-}  
-  
-/* Range Slider */  
-.range-container {  
-  position: relative;  
-}  
-  
-.range-value-display {  
-  font-size: 24px;  
-  font-weight: 700;  
-  color: #121212;  
-  margin-bottom: 12px;  
-  text-align: center;  
-}  
-  
-.form-range {  
-  width: 100%;  
-  height: 8px;  
-  border-radius: 8px;  
-  background: #E5E5E5;  
-  outline: none;  
-  appearance: none;  
-  cursor: pointer;  
-}  
-  
-.form-range::-webkit-slider-thumb {  
-  appearance: none;  
-  width: 24px;  
-  height: 24px;  
-  border-radius: 50%;  
-  background: #D6EC83;  
-  border: 3px solid #121212;  
-  cursor: pointer;  
-  transition: transform 0.2s;  
-}  
-  
-.form-range::-webkit-slider-thumb:hover {  
-  transform: scale(1.2);  
-}  
-  
-.form-range::-moz-range-thumb {  
-  width: 24px;  
-  height: 24px;  
-  border-radius: 50%;  
-  background: #D6EC83;  
-  border: 3px solid #121212;  
-  cursor: pointer;  
-  transition: transform 0.2s;  
-}  
-  
-.form-range::-moz-range-thumb:hover {  
-  transform: scale(1.2);  
-}  
-  
-.range-labels {  
-  display: flex;  
-  justify-content: space-between;  
-  margin-top: 8px;  
-  font-size: 14px;  
-  color: #666666;  
-}  
-  
-.hint-text {  
-  font-size: 14px;  
-  color: #999999;  
-  margin-top: 8px;  
-  text-align: center;  
-}  
-  
-/* Results Section */  
-.results-card {  
-  background: linear-gradient(135deg, #121212 0%, #2a2a2a 100%);  
-  border-radius: 16px;  
-  padding: 40px;  
-  text-align: center;  
-  margin-top: 32px;  
-  opacity: 0;  
-  transform: translateY(20px);  
-  transition: all 0.5s ease;  
-}  
-  
-.results-card.visible {  
-  opacity: 1;  
-  transform: translateY(0);  
-}  
-  
-.results-hero {  
-  margin-bottom: 32px;  
-}  
-  
-.results-label {  
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;  
-  font-size: 18px;  
-  font-weight: 600;  
-  color: rgba(255, 255, 255, 0.8);  
-  margin-bottom: 16px;  
-  text-transform: uppercase;  
-  letter-spacing: 1px;  
-}  
-  
-.results-value {  
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;  
-  font-size: 64px;  
-  font-weight: 800;  
-  color: #D6EC83;  
-  line-height: 1;  
-  letter-spacing: -2px;  
-  text-shadow: 0 4px 20px rgba(214, 236, 131, 0.3);  
-}  
-  
-.results-period {  
-  font-size: 20px;  
-  color: rgba(255, 255, 255, 0.7);  
-  margin-top: 8px;  
-}  
-  
-/* Results Grid */  
-.results-grid {  
-  display: grid;  
-  grid-template-columns: repeat(2, 1fr);  
-  gap: 20px;  
-  padding-top: 32px;  
-  border-top: 1px solid rgba(255, 255, 255, 0.1);  
-}  
-  
-.result-metric {  
-  text-align: center;  
-}  
-  
-.metric-value {  
-  font-size: 28px;  
-  font-weight: 700;  
-  color: #FFFFFF;  
-  margin-bottom: 6px;  
-}  
-  
-.metric-label {  
-  font-size: 14px;  
-  color: rgba(255, 255, 255, 0.6);  
-  text-transform: uppercase;  
-  letter-spacing: 0.5px;  
-}  
-  
-/* Areas Section */  
-.areas-section {  
-  margin-top: 24px;  
-  padding-top: 24px;  
-  border-top: 1px solid rgba(255, 255, 255, 0.1);  
-}  
-  
-.areas-label {  
-  font-size: 14px;  
-  color: rgba(255, 255, 255, 0.6);  
-  margin-bottom: 10px;  
-  text-transform: uppercase;  
-  letter-spacing: 0.5px;  
-}  
-  
-.areas-list {  
-  font-size: 20px;  
-  font-weight: 600;  
-  color: #D6EC83;  
-}  
-  
-/* CTA Button */  
-.calculator-cta {  
-  text-align: center;  
-  margin-top: 32px;  
-}  
-  
-.calculator-cta-btn {  
-  display: inline-block;  
-  padding: 18px 48px;  
-  font-size: 18px;  
-  font-weight: 700;  
-  background: #D6EC83;  
-  color: #121212;  
-  border: 2px solid #D6EC83;  
-  border-radius: 50px;  
-  text-decoration: none;  
-  cursor: pointer;  
-  transition: all 0.3s;  
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;  
-}  
-  
-.calculator-cta-btn:hover {  
-  background: transparent;  
-  color: #D6EC83;  
-  transform: translateY(-2px);  
-  box-shadow: 0 8px 20px rgba(214, 236, 131, 0.3);  
-}  
-  
-/* Tablet */  
-@media (max-width: 1024px) {  
-  .calculator-title {  
-    font-size: 40px;  
-  }  
-  
-  .results-value {  
-    font-size: 56px;  
-  }  
-}  
-  
-/* Mobile */  
-@media (max-width: 768px) {  
-  .calculator-section {  
-    padding: 60px 20px;  
-  }  
-  
-  .calculator-title {  
-    font-size: 36px;  
-    margin-bottom: 12px;  
-  }  
-  
-  .calculator-subtitle {  
-    font-size: 18px;  
-    margin-bottom: 30px;  
-  }  
-  
-  .calculator-card {  
-    padding: 30px 20px;  
-  }  
-  
-  .calculator-grid {  
-    grid-template-columns: 1fr;  
-    gap: 20px;  
-    margin-bottom: 24px;  
-  }  
-  
-  .results-card {  
-    padding: 30px 20px;  
-  }  
-  
-  .results-value {  
-    font-size: 48px;  
-  }  
-  
-  .results-grid {  
-    grid-template-columns: 1fr;  
-    gap: 16px;  
-  }  
-  
-  .metric-value {  
-    font-size: 24px;  
-  }  
-}  
-  
-@media (max-width: 480px) {  
-  .calculator-title {  
-    font-size: 32px;  
-  }  
-  
-  .results-value {  
-    font-size: 40px;  
-  }  
-  
-  .areas-list {  
-    font-size: 18px;  
-  }  
-}  
-</style>  
-  
-<div class="calculator-section">  
-  <div class="calculator-container">  
-    <h2 class="calculator-title">Calculate Your Pay</h2>  
-    <p class="calculator-subtitle">See what you could earn driving for Relay</p>  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Relay Van Driver Pay Calculator</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    html,body{
+      margin:0;padding:0;
+      background:#FFFFFF;color:#121212;
+      font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+    .container{max-width:720px;margin:0 auto;padding:0 16px;}
+    p,label,select,input{font-size:16px;line-height:1.4;}
+
+    .page-title{
+      text-align:center;
+      font-size:32px;
+      font-weight:800;
+      margin:32px 0 20px;
+      color:#121212;
+      letter-spacing:-0.3px;
+    }
+
+    .calculator{
+      background:#FFFFFF;
+      border:1px solid rgba(18,18,18,0.15);
+      border-radius:16px;
+      padding:20px;
+      box-shadow:0 8px 24px rgba(0,0,0,0.06);
+      margin:0;
+    }
+
+    .form-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;}
+    .form-group-col{flex:1 1 220px;}
+    label{display:block;font-weight:600;margin:0 0 8px 0;}
+    select,input[type=range]{
+      width:100%;
+      background:#FFFFFF;
+      border:1px solid rgba(18,18,18,0.25);
+      border-radius:8px;
+      padding:12px;
+      box-sizing:border-box;
+      color:#121212;
+    }
+    input[type=range]{padding:0;height:36px;}
+
+    #results-container{
+      margin-top:12px;
+      background:#FFFFFF;
+      border:1px solid rgba(18,18,18,0.08);
+      border-radius:12px;
+      padding:16px;
+      text-align:center;
+    }
+    .label{font-size:18px;color:#333;margin-bottom:6px;}
+    .hero-result .value-chip{
+      display:inline-block;
+      background:#D6EC83;
+      color:#121212;
+      border-radius:12px;
+      padding:12px 16px;
+      font-weight:700;
+      font-size:28px;
+      line-height:1;
+    }
+
+    .other-metrics{
+      display:flex;gap:16px;justify-content:center;flex-wrap:wrap;
+      margin-top:16px;padding-top:16px;border-top:1px solid rgba(18,18,18,0.12);
+    }
+    .metric{min-width:120px;text-align:center;}
+    .metric .v{font-weight:700;font-size:18px;color:#121212;}
+    .metric .k{font-size:14px;color:#555;}
     
-    <div class="calculator-card">  
-      <!-- Calculator Inputs -->  
-      <div class="calculator-grid">  
-        <!-- Depot -->  
-        <div class="form-group">  
-          <label class="form-label">  
-            <span class="label-number">1</span>  
-            Depot  
-          </label>  
-          <select id="depot" class="form-select">  
-            <option value="UB11">UB11 – West London</option>  
-            <option value="NG15">NG15 – Nottingham</option>  
-          </select>  
-        </div>  
+    .compatible-areas{
+      margin-top:16px;
+      padding-top:16px;
+      border-top:1px solid rgba(18,18,18,0.12);
+      text-align:center;
+    }
+    .compatible-areas .area-list{
+      font-size:18px;
+      font-weight:700;
+      color:#121212;
+    }
+
+    .hint{font-size:14px;color:#666; margin-top: 4px;}
+
+    @media (max-width: 600px) {
+      .page-title{font-size:24px;margin:24px 0 16px;}
+      .form-row {flex-direction: column;gap: 0;margin-bottom: 0;}
+      .form-group-col {margin-bottom: 20px;flex-basis: auto;}
+      .calculator > .form-row:last-of-type > .form-group-col:last-child {margin-bottom: 0;}
+      .label{font-size:16px;}
+      .hero-result .value-chip{font-size:24px;}
+      .metric .v{font-size:16px;}
+      .metric .k{font-size:12px;}
+      .compatible-areas .area-list { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="page-title">Relay Van Driver Pay Calculator</h1>
+
+    <section class="calculator">
+      <div class="form-row">
+        <div class="form-group-col">
+          <label for="depot">1. Depot</label>
+          <select id="depot">
+            <option value="UB11">UB11 – West London</option>
+            <option value="NG15">NG15 – Nottingham</option>
+          </select>
+        </div>
+        <div class="form-group-col">
+          <label for="shiftDuration">2. Shift duration</label>
+          <select id="shiftDuration"></select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group-col">
+          <label for="vanType">3. Van</label>
+          <select id="vanType">
+            <option value="LWB">Long Wheelbase (LWB)</option>
+            <option value="XLWB">Extra Long Wheelbase (XLWB)</option>
+            <option value="Luton">Luton Van</option>
+          </select>
+        </div>
+        <div class="form-group-col">
+          <label for="daysWeek">4. Days per week: <span id="daysLabel">5</span></label>
+          <input id="daysWeek" type="range" min="1" max="7" step="1" value="5" />
+          <div class="hint" aria-live="polite">Move the slider to change days.</div>
+        </div>
+      </div>
+
+      <div id="results-container" aria-live="polite"></div>
+    </section>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const vanTypes = {
+        'LWB':   { bags: 75 },
+        'XLWB':  { bags: 105 },
+        'Luton': { bags: 120 }
+      };
+
+      const routeData = {
+        'UB11': {
+          'West London': {stops:5,miles:40,shift:6},
+          'SE London':   {stops:5,miles:56,shift:8},
+          'NE London':   {stops:6,miles:85,shift:8}
+        },
+        'NG15': {
+          'Nottingham': {stops:9,miles:58,shift:6},
+          'Sheffield':  {stops:6,miles:97,shift:7},
+          'Birmingham': {stops:7,miles:138,shift:8}, // updated to 8 hours
+          'Manchester': {stops:5,miles:155,shift:9},
+          'Liverpool':  {stops:5,miles:224,shift:10} // updated to 10 hours
+        }
+      };
+
+      const depotEl   = document.getElementById('depot');
+      const shiftEl   = document.getElementById('shiftDuration');
+      const vanTypeEl = document.getElementById('vanType');
+      const daysEl    = document.getElementById('daysWeek');
+
+      function populateShiftDurations() {
+        const depot = depotEl.value;
+        const depotRoutes = routeData[depot];
         
-        <!-- Shift Duration -->  
-        <div class="form-group">  
-          <label class="form-label">  
-            <span class="label-number">2</span>  
-            Shift duration  
-          </label>  
-          <select id="shiftDuration" class="form-select"></select>  
-        </div>  
+        const durations = new Set();
+        Object.values(depotRoutes).forEach(route => durations.add(route.shift));
         
-        <!-- Van Type -->  
-        <div class="form-group">  
-          <label class="form-label">  
-            <span class="label-number">3</span>  
-            Van type  
-          </label>  
-          <select id="vanType" class="form-select">  
-            <option value="LWB">Long Wheelbase (LWB)</option>  
-            <option value="XLWB">Extra Long Wheelbase (XLWB)</option>  
-            <option value="Luton">Luton Van</option>  
-          </select>  
-        </div>  
+        const sortedDurations = [...durations].sort((a, b) => a - b);
+
+        shiftEl.innerHTML = '';
+        sortedDurations.forEach(duration => {
+          const opt = document.createElement('option');
+          opt.value = duration;
+          opt.textContent = `${duration} hours`;
+          shiftEl.appendChild(opt);
+        });
+      }
+
+      // Updated pay function: NG15 uses flat pay per van type & shift; UB11 keeps existing bands
+      function payFor(depot, hours, vanType) {
+        const bags = vanTypes[vanType].bags;
+
+        // NG15 – new pay structure, independent of bags
+        if (depot === 'NG15') {
+          if (hours === 6) { // Nottingham
+            if (vanType === 'LWB')   return 115;
+            if (vanType === 'XLWB')  return 121;
+            if (vanType === 'Luton') return 127;
+          }
+          if (hours === 7) { // Sheffield
+            if (vanType === 'LWB')   return 131;
+            if (vanType === 'XLWB')  return 138;
+            if (vanType === 'Luton') return 145;
+          }
+          if (hours === 8) { // Birmingham
+            if (vanType === 'LWB')   return 141;
+            if (vanType === 'XLWB')  return 148;
+            if (vanType === 'Luton') return 155;
+          }
+          if (hours === 9) { // Manchester
+            if (vanType === 'LWB')   return 157;
+            if (vanType === 'XLWB')  return 165;
+            if (vanType === 'Luton') return 173;
+          }
+          if (hours === 10) { // Liverpool
+            if (vanType === 'LWB')   return 175;
+            if (vanType === 'XLWB')  return 185;
+            if (vanType === 'Luton') return 195;
+          }
+        }
+
+        // UB11 – keep existing bag-based bands
+        if (depot === 'UB11') {
+          if (hours === 6) {
+            if (bags <= 64)  return 95;
+            if (bags <= 80)  return 105;
+            if (bags <= 94)  return 110;
+            if (bags <= 110) return 115;
+            return 120;
+          }
+          if (hours === 8) {
+            if (bags <= 64)  return 125;
+            if (bags <= 80)  return 135;
+            if (bags <= 94)  return 140;
+            if (bags <= 110) return 145;
+            return 150;
+          }
+        }
+
+        return null;
+      }
+
+      function fmt(x){return x===null?'N/A':'£'+Math.round(x);}
+
+      function render(){
+        const depot      = depotEl.value;
+        const shiftHours = Number(shiftEl.value);
+        if (!shiftHours) return;
+
+        const days    = Number(daysEl.value);
+        const vanType = vanTypeEl.value;
+
+        document.getElementById('daysLabel').textContent = days;
+
+        const perShift = payFor(depot, shiftHours, vanType);
+        const weekly   = perShift ? perShift * days : null;
         
-        <!-- Days per Week -->  
-        <div class="form-group">  
-          <label class="form-label">  
-            <span class="label-number">4</span>  
-            Days per week  
-          </label>  
-          <div class="range-container">  
-            <div class="range-value-display" id="daysLabel">5 days</div>  
-            <input id="daysWeek" type="range" min="1" max="7" step="1" value="5" class="form-range" />  
-            <div class="range-labels">  
-              <span>1</span>  
-              <span>7</span>  
-            </div>  
-          </div>  
-        </div>  
-      </div>  
-      
-      <!-- Results -->  
-      
-<!-- CTA -->
-<div class="calculator-cta">
-<a href="#apply" class="calculator-cta-btn">Apply Now</a>
-</div>
-</div>
+        // Find all areas that match the selected depot and shift duration
+        const matchingAreas = [];
+        const depotRoutes = routeData[depot];
+        for (const areaName in depotRoutes) {
+          if (depotRoutes[areaName].shift === shiftHours) {
+            matchingAreas.push(areaName);
+          }
+        }
+        const areaListStr = matchingAreas.length > 0 ? matchingAreas.join(' or ') : 'N/A';
+
+        const c = document.getElementById('results-container');
+        c.innerHTML = `
+          <div class="hero-result">
+            <div class="label">Estimated weekly pay</div>
+            <div class="value-chip">${fmt(weekly)}</div>
+          </div>
+          <div class="other-metrics">
+            <div class="metric">
+              <div class="v">${fmt(perShift)}</div>
+              <div class="k">Per shift</div>
+            </div>
+            <div class="metric">
+              <div class="v">${shiftHours} hours</div>
+              <div class="k">Shift length</div>
+            </div>
+          </div>
+          <div class="compatible-areas">
+            <div class="label">Possible areas for this shift</div>
+            <div class="area-list">${areaListStr}</div>
+          </div>`;
+      }
+
+      depotEl.addEventListener('change', () => { populateShiftDurations(); render(); });
+      shiftEl.addEventListener('change', render);
+      vanTypeEl.addEventListener('change', render);
+      daysEl.addEventListener('input', render);
+
+      // Initial setup
+      populateShiftDurations();
+      render();
+    });
+  </script>
+</body>
+</html>
