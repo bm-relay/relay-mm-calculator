@@ -1,253 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Relay Van Driver Pay Calculator: UB11 (London)</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Relay Van Driver Pay Calculator: UB11 (West London)</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-  <style>
-    /* --- Styles (Keep these the same for both files) --- */
-    html,body{
-      margin:0;padding:0;
-      background:#FFFFFF;color:#121212;
-      font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    }
-    .container{max-width:720px;margin:0 auto;padding:0 16px;}
-    p,label,select,input{font-size:16px;line-height:1.4;}
-    .page-title{
-      text-align:center;
-      font-size:32px;
-      font-weight:800;
-      margin:32px 0 20px;
-      color:#121212;
-      letter-spacing:-0.3px;
-    }
-    .calculator{
-      background:#FFFFFF;
-      border:1px solid rgba(18,18,18,0.15);
-      border-radius:16px;
-      padding:20px;
-      box-shadow:0 8px 24px rgba(0,0,0,0.06);
-      margin:0;
-    }
-    .form-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;}
-    .form-group-col{flex:1 1 220px;}
-    label{display:block;font-weight:600;margin:0 0 8px 0;}
-    select,input[type=range]{
-      width:100%;
-      background:#FFFFFF;
-      border:1px solid rgba(18,18,18,0.25);
-      border-radius:8px;
-      padding:12px;
-      box-sizing:border-box;
-      color:#121212;
-    }
-    input[type=range]{padding:0;height:36px;}
-    #results-container{
-      margin-top:12px;
-      background:#FFFFFF;
-      border:1px solid rgba(18,18,18,0.08);
-      border-radius:12px;
-      padding:16px;
-      text-align:center;
-    }
-    .label{font-size:18px;color:#333;margin-bottom:6px;}
-    .hero-result .value-chip{
-      display:inline-block;
-      background:#D6EC83;
-      color:#121212;
-      border-radius:12px;
-      padding:12px 16px;
-      font-weight:700;
-      font-size:28px;
-      line-height:1;
-    }
-    .other-metrics{
-      display:flex;gap:16px;justify-content:center;flex-wrap:wrap;
-      margin-top:16px;padding-top:16px;border-top:1px solid rgba(18,18,18,0.12);
-    }
-    .metric{min-width:120px;text-align:center;}
-    .metric .v{font-weight:700;font-size:18px;color:#121212;}
-    .metric .k{font-size:14px;color:#555;}
-    .compatible-areas{
-      margin-top:16px;
-      padding-top:16px;
-      border-top:1px solid rgba(18,18,18,0.12);
-      text-align:center;
-    }
-    .compatible-areas .area-list{
-      font-size:18px;
-      font-weight:700;
-      color:#121212;
-    }
-    .hint{font-size:14px;color:#666; margin-top: 4px;}
-    @media (max-width: 600px) {
-      .page-title{font-size:24px;margin:24px 0 16px;}
-      .form-row {flex-direction: column;gap: 0;margin-bottom: 0;}
-      .form-group-col {margin-bottom: 20px;flex-basis: auto;}
-      .calculator > .form-row:last-of-type > .form-group-col:last-child {margin-bottom: 0;}
-      .label{font-size:16px;}
-      .hero-result .value-chip{font-size:24px;}
-      .metric .v{font-size:16px;}
-      .metric .k{font-size:12px;}
-      .compatible-areas .area-list { font-size: 16px; }
-    }
-  </style>
+    <link href="styles.css" rel="stylesheet">
 </head>
 <body>
-  <div class="container">
-    <h1 class="page-title">Relay Van Driver Pay Calculator: UB11 (London)</h1>
+    <div class="container">
+        <h1 class="page-title">Relay Van Driver Pay Calculator: UB11 (West London)</h1>
 
-    <section class="calculator">
-      <div class="form-row">
-        <div class="form-group-col">
-          <label for="shiftDuration">1. Shift duration</label>
-          <select id="shiftDuration"></select>
-        </div>
-        <div class="form-group-col">
-          <label for="vanType">2. Van</label>
-          <select id="vanType">
-            <option value="LWB">Long Wheelbase (LWB)</option>
-            <option value="XLWB">Extra Long Wheelbase (XLWB)</option>
-            <option value="Luton">Luton Van</option>
-          </select>
-        </div>
-      </div>
+        <section class="calculator">
+            <div class="form-row">
+                <div class="form-group-col">
+                    <label for="shiftDuration">1. Shift duration</label>
+                    <select id="shiftDuration"></select>
+                </div>
+                <div class="form-group-col">
+                    <label for="vanType">2. Van</label>
+                    <select id="vanType">
+                        <option value="LWB">Long Wheelbase (LWB)</option>
+                        <option value="XLWB">Extra Long Wheelbase (XLWB)</option>
+                        <option value="Luton">Luton Van</option>
+                    </select>
+                </div>
+            </div>
 
-      <div class="form-row">
-        <div class="form-group-col">
-          <label for="daysWeek">3. Days per week: <span id="daysLabel">5</span></label>
-          <input id="daysWeek" type="range" min="1" max="7" step="1" value="5" />
-          <div class="hint" aria-live="polite">Move the slider to change days.</div>
-        </div>
-                <div class="form-group-col"></div> 
-      </div>
+            <div class="form-row">
+                <div class="form-group-col">
+                    <label for="daysWeek">3. Days per week: <span id="daysLabel">5</span></label>
+                    <input id="daysWeek" type="range" min="1" max="7" step="1" value="5" />
+                    <div class="hint" aria-live="polite">Move the slider to change days.</div>
+                </div>
+                <div class="form-group-col"></div>
+            </div>
 
-      <div id="results-container" aria-live="polite"></div>
-    </section>
-  </div>
+            <div id="results-container" aria-live="polite"></div>
+        </section>
+    </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const VAN_TYPES = {
-        'LWB':   { bags: 75 },
-        'XLWB':  { bags: 105 },
-        'Luton': { bags: 120 }
-      };
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const VAN_TYPES = {
+                'LWB':   { bags: 75 },
+                'XLWB':  { bags: 105 },
+                'Luton': { bags: 120 }
+            };
 
-      // ONLY UB11 ROUTES
-      const ROUTE_DATA = {
-        'UB11': {
-          'West London': {stops:5,miles:40,shift:6},
-          'SE London':   {stops:5,miles:56,shift:8},
-          'NE London':   {stops:6,miles:85,shift:8}
-        }
-      };
+            // ONLY UB11 ROUTES
+            const ROUTE_DATA = {
+                'UB11': {
+                    'West London': {stops:5,miles:40,shift:6},
+                    'SE London':   {stops:5,miles:56,shift:8},
+                    'NE London':   {stops:6,miles:85,shift:8}
+                }
+            };
 
-      const shiftEl   = document.getElementById('shiftDuration');
-      const vanTypeEl = document.getElementById('vanType');
-      const daysEl    = document.getElementById('daysWeek');
-      
-      // HARDCODED DEPOT
-      const DEPOT_CODE = 'UB11';
+            const shiftEl   = document.getElementById('shiftDuration');
+            const vanTypeEl = document.getElementById('vanType');
+            const daysEl    = document.getElementById('daysWeek');
 
-      function populateShiftDurations() {
-        const depotRoutes = ROUTE_DATA[DEPOT_CODE];
-        
-        const durations = new Set();
-        Object.values(depotRoutes).forEach(route => durations.add(route.shift));
-        
-        const sortedDurations = [...durations].sort((a, b) => a - b);
+            // HARDCODED DEPOT
+            const DEPOT_CODE = 'UB11';
 
-        shiftEl.innerHTML = '';
-        sortedDurations.forEach(duration => {
-          const opt = document.createElement('option');
-          opt.value = duration;
-          opt.textContent = `${duration} hours`;
-          shiftEl.appendChild(opt);
-        });
-      }
+            function populateShiftDurations() {
+                const depotRoutes = ROUTE_DATA[DEPOT_CODE];
+                
+                const durations = new Set();
+                Object.values(depotRoutes).forEach(route => durations.add(route.shift));
+                
+                const sortedDurations = [...durations].sort((a, b) => a - b);
 
-      // PAY FUNCTION FOR UB11 ONLY
-      function payFor(hours, vanType) {
-        const bags = VAN_TYPES[vanType].bags;
+                shiftEl.innerHTML = '';
+                sortedDurations.forEach(duration => {
+                    const opt = document.createElement('option');
+                    opt.value = duration;
+                    opt.textContent = `${duration} hours`;
+                    shiftEl.appendChild(opt);
+                });
+            }
 
-        // UB11 – bag-based bands
-        if (hours === 6) {
-          if (bags <= 64)  return 95;
-          if (bags <= 80)  return 105;
-          if (bags <= 94)  return 110;
-          if (bags <= 110) return 115;
-          return 120;
-        }
-        if (hours === 8) {
-          if (bags <= 64)  return 125;
-          if (bags <= 80)  return 135;
-          if (bags <= 94)  return 140;
-          if (bags <= 110) return 145;
-          return 150;
-        }
+            // PAY FUNCTION FOR UB11 ONLY (bag-based bands)
+            function payFor(hours, vanType) {
+                const bags = VAN_TYPES[vanType].bags;
 
-        return null;
-      }
+                if (hours === 6) {
+                    if (bags <= 64)  return 95;
+                    if (bags <= 80)  return 105;
+                    if (bags <= 94)  return 110;
+                    if (bags <= 110) return 115;
+                    return 120;
+                }
+                if (hours === 8) {
+                    if (bags <= 64)  return 125;
+                    if (bags <= 80)  return 135;
+                    if (bags <= 94)  return 140;
+                    if (bags <= 110) return 145;
+                    return 150;
+                }
+                
+                return null;
+            }
 
-      function fmt(x){return x===null?'N/A':'£'+Math.round(x);}
+            function fmt(x){return x===null?'N/A':'£'+Math.round(x);}
 
-      function render(){
-        const shiftHours = Number(shiftEl.value);
-        if (!shiftHours) return;
+            function render(){
+                const shiftHours = Number(shiftEl.value);
+                if (!shiftHours) return;
 
-        const days    = Number(daysEl.value);
-        const vanType = vanTypeEl.value;
+                const days    = Number(daysEl.value);
+                const vanType = vanTypeEl.value;
 
-        document.getElementById('daysLabel').textContent = days;
+                document.getElementById('daysLabel').textContent = days;
 
-        const perShift = payFor(shiftHours, vanType); // No depot needed
-        const weekly   = perShift ? perShift * days : null;
-        
-        // Find all areas that match the selected shift duration
-        const matchingAreas = [];
-        const depotRoutes = ROUTE_DATA[DEPOT_CODE];
-        for (const areaName in depotRoutes) {
-          if (depotRoutes[areaName].shift === shiftHours) {
-            matchingAreas.push(areaName);
-          }
-        }
-        const areaListStr = matchingAreas.length > 0 ? matchingAreas.join(' or ') : 'N/A';
+                const perShift = payFor(shiftHours, vanType);
+                const weekly   = perShift ? perShift * days : null;
+                
+                // Find all areas that match the selected shift duration
+                const matchingAreas = [];
+                const depotRoutes = ROUTE_DATA[DEPOT_CODE];
+                for (const areaName in depotRoutes) {
+                    if (depotRoutes[areaName].shift === shiftHours) {
+                        matchingAreas.push(areaName);
+                    }
+                }
+                const areaListStr = matchingAreas.length > 0 ? matchingAreas.join(' or ') : 'N/A';
 
-        const c = document.getElementById('results-container');
-        c.innerHTML = `
-          <div class="hero-result">
-            <div class="label">Estimated weekly pay</div>
-            <div class="value-chip">${fmt(weekly)}</div>
-          </div>
-          <div class="other-metrics">
-            <div class="metric">
-              <div class="v">${fmt(perShift)}</div>
-              <div class="k">Per shift</div>
-            </div>
-            <div class="metric">
-              <div class="v">${shiftHours} hours</div>
-              <div class="k">Shift length</div>
-            </div>
-          </div>
-          <div class="compatible-areas">
-            <div class="label">Possible areas for this shift (UB11 Depot)</div>
-            <div class="area-list">${areaListStr}</div>
-          </div>`;
-      }
+                const c = document.getElementById('results-container');
+                c.innerHTML = `
+                    <div class="hero-result">
+                        <div class="label">Estimated weekly pay</div>
+                        <div class="value-chip">${fmt(weekly)}</div>
+                    </div>
+                    <div class="other-metrics">
+                        <div class="metric">
+                            <div class="v">${fmt(perShift)}</div>
+                            <div class="k">Per shift</div>
+                        </div>
+                        <div class="metric">
+                            <div class="v">${shiftHours} hours</div>
+                            <div class="k">Shift length</div>
+                        </div>
+                    </div>
+                    <div class="compatible-areas">
+                        <div class="label">Possible areas for this shift (UB11 Depot)</div>
+                        <div class="area-list">${areaListStr}</div>
+                    </div>`;
+            }
 
-      // Set up listeners
-      shiftEl.addEventListener('change', render);
-      vanTypeEl.addEventListener('change', render);
-      daysEl.addEventListener('input', render);
+            // Set up listeners
+            shiftEl.addEventListener('change', render);
+            vanTypeEl.addEventListener('change', render);
+            daysEl.addEventListener('input', render);
 
-      // Initial setup
-      populateShiftDurations();
-      render();
-    });
-  </script>
+            // Initial setup
+            populateShiftDurations();
+            render();
+        });
+    </script>
 </body>
 </html>
